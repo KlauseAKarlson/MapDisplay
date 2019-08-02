@@ -44,7 +44,7 @@ namespace MapDisplay
             ColEnd = ColEnd == -1 ? _Map.MapWidth : ColEnd;
             if (ColEnd == _Map.MapWidth) ColEnd--;
             int RowEnd=RowAt(e.ClipRectangle.Right, e.ClipRectangle.Bottom);
-            RowEnd = RowEnd == -1 ? _PMapHeight : RowEnd;
+            RowEnd = RowEnd == -1 ? _Map.MapHeight : RowEnd;
             if (RowEnd == _Map.MapHeight) RowEnd--;
             //paint tiles
             for (int row=RowStart;row<=RowEnd;row++)
@@ -54,8 +54,9 @@ namespace MapDisplay
                     Point p = TileStart(col, row);
                     _Map.PaintTilesAt(e.Graphics, p.X, p.Y, col, row);
                 }
-            }
-        }
+            }//end paint tiles
+        }//end on paint
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             int col = ColumnAt(e.Location);
@@ -65,12 +66,22 @@ namespace MapDisplay
                 Token t = _Map.getToken(col, row);
                 if (t != null)//if a token is present
                 {
-                    _Map.pullToken(col, row);
-                    _Map.tokenSet.GrabToken(t, new Point(col, row));
-                }
-            }
+                    if (e.Button==MouseButtons.Left)
+                        //left click grabs
+                    { 
+                        _Map.pullToken(col, row);
+                        _Map.tokenSet.GrabToken(t, new Point(col, row));
+                    }
+                    else if(e.Button == MouseButtons.Right)
+                    {
+                        //right click sends back to panel
+                        _Map.pullToken(col, row);
+                        _Map.tokenSet.PlaceInPanel(t);
+                    }
+                }//end if token present
+            }//else if out of boundry do nothing
             base.OnMouseDown(e);
-        }
+        }//end on map down
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -78,7 +89,9 @@ namespace MapDisplay
             int row = RowAt(e.Location);
             if (_Map.tokenSet.TokenGrabbed)//if a token is grabbed
             {
-                if(col == -1 | row == -1)//boundry check
+                if(col < 0  | col >= _Map.MapWidth
+                    || 
+                    row < 0 | row >= _Map.MapHeight)//boundry check
                 {
                     _Map.tokenSet.BounceToken();//if out of bounds bounce
                 }
@@ -98,5 +111,5 @@ namespace MapDisplay
             base.OnMouseUp(e);
         }//end on mouse up
         #endregion
-    }
-}
+    }//end map view
+}//end namespace

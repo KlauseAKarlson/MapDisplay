@@ -35,6 +35,7 @@
             this.BTrash = new System.Windows.Forms.Button();
             this.DLoadMap = new System.Windows.Forms.OpenFileDialog();
             this.DNewToken = new System.Windows.Forms.OpenFileDialog();
+            this.BShowMirror = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // MapHolder
@@ -48,6 +49,7 @@
             this.MapHolder.Name = "MapHolder";
             this.MapHolder.Size = new System.Drawing.Size(629, 395);
             this.MapHolder.TabIndex = 0;
+            this.MapHolder.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MapHolder_MouseUp);
             // 
             // TokenPanel
             // 
@@ -62,6 +64,7 @@
             this.TokenPanel.Size = new System.Drawing.Size(153, 358);
             this.TokenPanel.TabIndex = 1;
             this.TokenPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.TokenPanel_DragDrop);
+            this.TokenPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.TokenPanel_DragEnter);
             this.TokenPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TokenPanel_MouseUp);
             // 
             // BNewToken
@@ -103,11 +106,22 @@
             // 
             this.DNewToken.FileOk += new System.ComponentModel.CancelEventHandler(this.DNewToken_FileOk);
             // 
+            // BShowMirror
+            // 
+            this.BShowMirror.Location = new System.Drawing.Point(121, 12);
+            this.BShowMirror.Name = "BShowMirror";
+            this.BShowMirror.Size = new System.Drawing.Size(102, 29);
+            this.BShowMirror.TabIndex = 5;
+            this.BShowMirror.Text = "Show Mirror";
+            this.BShowMirror.UseVisualStyleBackColor = true;
+            this.BShowMirror.Click += new System.EventHandler(this.BShowMirror_Click);
+            // 
             // FMapControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BShowMirror);
             this.Controls.Add(this.BTrash);
             this.Controls.Add(this.BLoadMap);
             this.Controls.Add(this.BNewToken);
@@ -129,5 +143,6 @@
         private System.Windows.Forms.Button BTrash;
         private System.Windows.Forms.OpenFileDialog DLoadMap;
         private System.Windows.Forms.OpenFileDialog DNewToken;
+        private System.Windows.Forms.Button BShowMirror;
     }
 }
