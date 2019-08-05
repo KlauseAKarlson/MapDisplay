@@ -18,10 +18,12 @@ namespace MapDisplay
         private String _MapStyle;
         private List<Layer> _layers;
         private TokenSet _TokenSet;
+        private List<Token> _TokenLoadBuffer=null;//used for loading saved maps
         public TokenSet tokenSet { get { return _TokenSet; } }
         private TokenLayer _Tokens;
-        public static readonly String HexMap = "HexMap", SquareMap = "SquareMap";
-
+        public static readonly string HexMap = "HexMap", SquareMap = "SquareMap";
+        private string _SavePath;
+        public string SavePath { get { return _SavePath; } }
         public int MapWidth { get { return _MapWidth; } }
         public int MapHeight { get { return _MapHeight; } }
         public int TileWidth { get { return _TileSet.Width; } }
@@ -38,8 +40,12 @@ namespace MapDisplay
             _Tokens = new TokenLayer(this);
             _TokenSet = new TokenSet(this, TokenPanel);
         }
-        public static Map loadMap(ZipArchive source, System.Windows.Forms.Panel TokenPanel)
+        public static Map loadMap(string SavePath, System.Windows.Forms.Panel TokenPanel)
         {
+            
+            ZipArchive source = new ZipArchive(
+                new FileStream(SavePath, FileMode.Open), 
+                ZipArchiveMode.Read);
             //create a mpa from a map save file, which is a zip archive
             TileSet tset;//tile set for the map being loaded
             Map saveMap;//the map beign loaded
@@ -87,6 +93,7 @@ namespace MapDisplay
                 tileNames.Add(currentLine.Substring(start));
                 //create map
                 saveMap = new Map(mapWidth, mapHeight, style, tset, TokenPanel);
+                saveMap._SavePath = SavePath;
             }
             //load tiles, tiles must be in the Tile set for the map layers to be loaded
             foreach (string name in tileNames)
@@ -128,9 +135,200 @@ namespace MapDisplay
                     }//end row loop
                 }//end stream reader
             }//end load layer loop
+            //load tokens
+            ZipArchiveEntry TokenList = source.GetEntry("TokenList.txt");
+            if (TokenList != null)//not all maps will have a tokenlist
+            {
+               using(StreamReader reader=new StreamReader(TokenList.Open()) )
+                {
+                    //create local variables for use in loop
+                    saveMap._TokenLoadBuffer = new List<Token>();
+                    string tokenName;
+                    ZipArchiveEntry TokenEntry;
+                    Token Tkn;
+                    int col, row;
+                    while(!reader.EndOfStream)
+                    {
+                        currentLine = reader.ReadLine();
+                       
+                        //determine if the token is in the tokenpanel or map
+                        char location = currentLine.ElementAt(0);
+                        if (location == 'P')//if the location is the panel
+                        {
+                            tokenName = currentLine;//no additional data is stored for this type of token
+                            //retrieve image and create token
+                            TokenEntry = source.GetEntry(tokenName+".png");
+                            using (Bitmap TImage = new Bitmap(TokenEntry.Open()) )
+                            {
+                                //we assume the token image has already been processed to make it into the save
+                                Tkn = saveMap.tokenSet.CreateToken(TImage);
+                                //we need to wait to place tokens into the token panel until the GUI has been cleared of the old map
+                                saveMap._TokenLoadBuffer.Add(Tkn);
+                                //we will oad these tokens into the panel when the map view is created
+                            }//end using TImage
+                        }
+                        else if (location == 'L')//if the token is in the map token layer
+                        {
+                            end = currentLine.IndexOf(",");
+                            tokenName = currentLine.Substring(0, end);
+                            //the token name is only the first part of the entry
+                            //we also need to retireve the column and row where the token is located
+                            start = end + 1;
+                            end = currentLine.IndexOf(",", start);
+                            col = int.Parse(currentLine.Substring(start, end - start));
+                            row = int.Parse(currentLine.Substring(end + 1));
+                            //retreive toekn image and create token
+                            TokenEntry= source.GetEntry(tokenName + ".png");
+                            using (Bitmap TImage = new Bitmap(TokenEntry.Open()))
+                            {
+                                //we assume the token image has already been processed to make it into the save
+                                Tkn = saveMap.tokenSet.CreateToken(TImage);
+                                //place toekn in panel
+                                saveMap.setToken(Tkn, col, row);
+                            }//end using TImage
+                        }//else unknown, do nothing
+                    }//end loop throguh token list
+                }//end using tokenlist reader
+            }//end if tokenlist exists
 
+            source.Dispose();
             //return map
             return saveMap;
+        }
+
+        public void SaveMap(String savePath)
+        {
+            //if we are reusing the source save, only update tokens, otherwise save the whole map
+            using (ZipArchive Save = new ZipArchive(
+                new FileStream(savePath, FileMode.OpenOrCreate),
+                ZipArchiveMode.Update) )
+            {
+                int TokenCounter = 0;
+                
+                ZipArchiveEntry TokenList = Save.GetEntry("TokenList.txt");
+                if(TokenList!=null) TokenList.Delete();
+                TokenList = Save.CreateEntry("TokenList.txt");
+                using (StreamWriter writer = new StreamWriter(TokenList.Open()) )
+                {
+                    string name;
+                    //save tokens in token panel
+                    foreach (Token t in _TokenSet.getPanelTokens())
+                    {
+                        name = "P" + TokenCounter;
+                        TokenCounter++;
+
+                        writer.WriteLine(name);
+                        SaveToken(t, Save, name);
+                    }
+                    //save tokens in tokenlayer
+                    for (int row=0; row<_MapHeight; row++)
+                    {
+                        for(int col=0; col<_MapWidth; col++)
+                        {
+                            Token t = getToken(col, row);
+                            if(t !=null)
+                            {
+                                name = "L" + TokenCounter;
+                                TokenCounter++;
+
+                                writer.WriteLine($"{name},{col},{row}");
+                                SaveToken(t, Save, name);
+                            }//end if token present
+                        }
+                    }
+                }//end write tokenlist
+                if (_SavePath != savePath)//if this is not the soruce save, create or overwrite the file
+                {
+                    //if this is not the original map, save the rest of the map
+                    //create description and save tile images
+                    ZipArchiveEntry description = Save.GetEntry("save.txt");
+                    if (description == null) description.Delete();//replace not append
+                    description = Save.CreateEntry("save.txt");
+                    using (StreamWriter saveWriter = new StreamWriter(description.Open()))
+                    {
+                        String mapType = this._MapStyle;
+                        //write type
+                        saveWriter.WriteLine(mapType);
+                        //write width and height
+                        saveWriter.WriteLine("Map Size:" +
+                                this.getWidth() + "," +
+                                this.getHeight());
+                        //write layers
+                        saveWriter.WriteLine("layers:" + this._layers.Count);
+                        //write tile size
+                        saveWriter.WriteLine("tileSize:" +
+                                this.getTileSet().Width + "," +
+                                this.getTileSet().Height);
+                        List<string> TileNames = new List<string>(_TileSet.getTileNames());
+                        for (int i = 0; i<TileNames.Count; i++)
+                        {
+                            string name = TileNames[i];
+                            saveWriter.Write(name);
+                            if (i < TileNames.Count-1)
+                            {
+                                saveWriter.Write(",");
+                            }
+                            //save tile as well
+                            ZipArchiveEntry e = Save.GetEntry(name + ".png");
+                            if (e == null) e = Save.CreateEntry(name + ".png");
+
+                            _TileSet.get(name).getImage().Save(
+                                e.Open(),
+                                System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                    }//end write description
+                    //write layers
+                    for (int layer =0;layer<_layers.Count;layer++)
+                    {
+                        //open or create layer file
+                        ZipArchiveEntry layerEntry = Save.GetEntry($"Layer{layer}.csv");
+                        if (layerEntry == null) layerEntry.Delete();//replace not append
+                        layerEntry = Save.CreateEntry($"Layer{layer}.csv");
+                        //create writer for layer file
+                        using(StreamWriter saveWriter=new StreamWriter(layerEntry.Open()))
+                        {
+                            //create local variables
+                            Layer currentLayer = _layers[layer];
+                            string tileText;
+                            Tile currentTile;
+                            //write file
+                            for (int y = 0; y < _MapHeight; y++)
+                            {
+                                //write rows naturally
+                                for (int x = 0; x < _MapWidth; x++)
+                                {
+                                    currentTile = currentLayer.Tiles[x,y];
+                                    if (currentTile == null)//take care of uninitialized empty tiles
+                                    {
+                                        tileText = "Empty";
+                                    }
+                                    else
+                                    {
+                                        tileText = currentTile.getName();
+                                    }
+                                    //logic for handling seperators
+                                    if (x < _MapWidth - 1)
+                                    {
+                                        tileText += ", ";
+                                    }
+                                    else
+                                    {
+                                        tileText += "\n";
+                                    }
+                                    saveWriter.Write(tileText);
+                                }//end X (width) loop
+                            }//end y (height) loop
+                        }//end layer save writer
+                    }//end layer loop
+                }//end save entire map
+            }//End ziparchive save
+        }//end save map
+        private void SaveToken(Token t, ZipArchive a, string name)
+        {
+            ZipArchiveEntry e=a.GetEntry(name+".png");
+            if (e == null)
+                e = a.CreateEntry(name + ".png");
+            t.getImage().Save(e.Open(), System.Drawing.Imaging.ImageFormat.Png);
         }
         public void addLayer()
         {
@@ -183,7 +381,16 @@ namespace MapDisplay
                     throw new Exception("Unkown style:" + _MapStyle);
                 }
                 _MapView.SetMap(this);
-            }
+                //if the map had tokens saved, we can now place any tokens that need to go into the token panel
+                if (_TokenLoadBuffer != null)
+                {
+                    foreach (Token t in _TokenLoadBuffer)
+                    {
+                        tokenSet.PlaceInPanel(t);
+                    }
+                    _TokenLoadBuffer = null;
+                }
+            }//end create mapview if needed
             return _MapView;
         }//end get map view
         public void setTile(string tileName, int x, int y, int l)

@@ -21,6 +21,10 @@ namespace MapDisplay
         private Point _GrabbedLocation;
         public static Point TokenPanel = new Point(-1, -1);
 
+        public ICollection<Token> getPanelTokens()
+        {
+            return _PanelTokens.Values;
+        }
         public TokenSet(Map m, Panel p)
         {
             _Map = m;
@@ -29,11 +33,7 @@ namespace MapDisplay
         }
         public Token CreateToken(Image i)
         {
-            return new Token(i, "", (4 * Math.Min(_Map.TileHeight, _Map.TileWidth) / 5));
-        }
-        public Token CreateToken(Image i, string name)
-        {
-            return new Token(i, name, (4 * Math.Min(_Map.TileHeight, _Map.TileWidth) / 5));
+            return new Token(i, (4 * Math.Min(_Map.TileHeight, _Map.TileWidth) / 5));
         }
 
         public void GrabToken(Token t, Point location)

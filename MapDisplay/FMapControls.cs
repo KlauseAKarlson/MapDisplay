@@ -19,6 +19,7 @@ namespace MapDisplay
         {
             InitializeComponent();
             DLoadMap.Filter = "Map (*.map)|*.map";
+            DSaveMap.Filter = "Map (*.map)|*.map";
             DNewToken.Filter = "Image Files(*.BMP;*.JPG;*.PNG)|*.BMP;*.JPG;*.PNG";
             _MirrorWindow = new FMirrorWindow(this);
             _MirrorWindow.Hide();
@@ -107,27 +108,43 @@ namespace MapDisplay
         #endregion
         private void DLoadMap_FileOk(object sender, CancelEventArgs e)
         {
-            using(System.IO.Compression.ZipArchive save = 
-                new System.IO.Compression.ZipArchive( DLoadMap.OpenFile() )  )
-            {
-                Map m = Map.loadMap(save, TokenPanel);
-                SwapMap(m);
-            }
+            String saveFile = DLoadMap.FileName;
+            Map m = Map.loadMap(saveFile, TokenPanel);
+            SwapMap(m);
+
         }//end load map file okay
 
         private void DNewToken_FileOk(object sender, CancelEventArgs e)
         {
-            if (_Map == null) return;//do nothing if there is no map
-            using(Bitmap i = new Bitmap(DNewToken.OpenFile()))//create token
-            {
-                Token t = _Map.tokenSet.CreateToken(i);
-                _Map.tokenSet.PlaceInPanel(t);
-            }
+
         }//end newtoken file okay
 
         private void BShowMirror_Click(object sender, EventArgs e)
         {
             _MirrorWindow.Show();
+        }
+
+        private void BSaveMap_Click(object sender, EventArgs e)
+        {
+            if (_Map != null)
+            {
+                DSaveMap.FileName = _Map.SavePath;
+                DSaveMap.ShowDialog();
+            }
+        }
+
+        private void DNewToken_FileOk_1(object sender, CancelEventArgs e)
+        {
+            using (Bitmap image = new Bitmap(DNewToken.FileName))
+            {
+                Token t = _Map.tokenSet.CreateToken(image);
+                _Map.tokenSet.PlaceInPanel(t);
+            }
+        }
+
+        private void DSaveMap_FileOk(object sender, CancelEventArgs e)
+        {
+            _Map.SaveMap(DSaveMap.FileName);
         }
     }//end form
 }//end namespace

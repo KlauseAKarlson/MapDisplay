@@ -36,6 +36,8 @@
             this.DLoadMap = new System.Windows.Forms.OpenFileDialog();
             this.DNewToken = new System.Windows.Forms.OpenFileDialog();
             this.BShowMirror = new System.Windows.Forms.Button();
+            this.BSaveMap = new System.Windows.Forms.Button();
+            this.DSaveMap = new System.Windows.Forms.SaveFileDialog();
             this.SuspendLayout();
             // 
             // MapHolder
@@ -82,7 +84,7 @@
             // 
             this.BLoadMap.Location = new System.Drawing.Point(3, 12);
             this.BLoadMap.Name = "BLoadMap";
-            this.BLoadMap.Size = new System.Drawing.Size(111, 30);
+            this.BLoadMap.Size = new System.Drawing.Size(100, 30);
             this.BLoadMap.TabIndex = 3;
             this.BLoadMap.Text = "Load Map";
             this.BLoadMap.UseVisualStyleBackColor = true;
@@ -104,23 +106,38 @@
             // 
             // DNewToken
             // 
-            this.DNewToken.FileOk += new System.ComponentModel.CancelEventHandler(this.DNewToken_FileOk);
+            this.DNewToken.FileOk += new System.ComponentModel.CancelEventHandler(this.DNewToken_FileOk_1);
             // 
             // BShowMirror
             // 
-            this.BShowMirror.Location = new System.Drawing.Point(121, 12);
+            this.BShowMirror.Location = new System.Drawing.Point(109, 12);
             this.BShowMirror.Name = "BShowMirror";
-            this.BShowMirror.Size = new System.Drawing.Size(102, 29);
+            this.BShowMirror.Size = new System.Drawing.Size(100, 30);
             this.BShowMirror.TabIndex = 5;
             this.BShowMirror.Text = "Show Mirror";
             this.BShowMirror.UseVisualStyleBackColor = true;
             this.BShowMirror.Click += new System.EventHandler(this.BShowMirror_Click);
+            // 
+            // BSaveMap
+            // 
+            this.BSaveMap.Location = new System.Drawing.Point(215, 12);
+            this.BSaveMap.Name = "BSaveMap";
+            this.BSaveMap.Size = new System.Drawing.Size(100, 30);
+            this.BSaveMap.TabIndex = 6;
+            this.BSaveMap.Text = "Save Map";
+            this.BSaveMap.UseVisualStyleBackColor = true;
+            this.BSaveMap.Click += new System.EventHandler(this.BSaveMap_Click);
+            // 
+            // DSaveMap
+            // 
+            this.DSaveMap.FileOk += new System.ComponentModel.CancelEventHandler(this.DSaveMap_FileOk);
             // 
             // FMapControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BSaveMap);
             this.Controls.Add(this.BShowMirror);
             this.Controls.Add(this.BTrash);
             this.Controls.Add(this.BLoadMap);
@@ -144,5 +161,7 @@
         private System.Windows.Forms.OpenFileDialog DLoadMap;
         private System.Windows.Forms.OpenFileDialog DNewToken;
         private System.Windows.Forms.Button BShowMirror;
+        private System.Windows.Forms.Button BSaveMap;
+        private System.Windows.Forms.SaveFileDialog DSaveMap;
     }
 }
