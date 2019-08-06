@@ -111,7 +111,7 @@ namespace MapDisplay
                 SwapMap(m);
             }catch (System.IO.IOException EX)
             {
-                MessageBox.Show(EX.ToString(), "En error has occured",
+                MessageBox.Show(EX.ToString(), "An error has occured",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -153,6 +153,22 @@ namespace MapDisplay
                 _Map.tokenSet.BounceToken();
             }
 
+        }
+
+        private void BHelp_Click(object sender, EventArgs e)
+        {
+            //display a message box that explains the controls
+            string helpText =
+@"Use the [Load Map] button to import a MapMaker map.
+Use the [Show Mirror] button to display the map in a seperate window.
+Use the [Save Map] button to save the current positions of tokens in a MapMaker file.
+Use the [New Token] button or drag and drop an image onto the token panel to create a new token.
+Drag and drop tokens to move them from the token panel to the map.
+Drag and drop tokens to move them around the map.
+Right click on a token on the map to send it back to the token panel.
+Right lick on a token in the token panel to delte the token.";
+            string caption = "Controls";
+            MessageBox.Show(helpText, caption, MessageBoxButtons.OK);
         }
     }//end form
 }//end namespace
