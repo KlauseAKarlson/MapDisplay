@@ -40,6 +40,7 @@
             this.MirrorFrame.Name = "MirrorFrame";
             this.MirrorFrame.Size = new System.Drawing.Size(800, 450);
             this.MirrorFrame.TabIndex = 0;
+            this.MirrorFrame.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MirrorFrame_Scroll);
             // 
             // FMirrorWindow
             // 

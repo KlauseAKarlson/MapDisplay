@@ -40,5 +40,10 @@ namespace MapDisplay
                 Hide();
             }
         }
+
+        private void MirrorFrame_Scroll(object sender, ScrollEventArgs e)
+        {
+            _Mirror.Invalidate();
+        }
     }
 }

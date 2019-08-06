@@ -145,5 +145,14 @@ namespace MapDisplay
         {
             _Map.SaveMap(DSaveMap.FileName);
         }
+
+        private void MapHolder_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (_Map != null)
+            {
+                _Map.tokenSet.BounceToken();
+            }
+
+        }
     }//end form
 }//end namespace

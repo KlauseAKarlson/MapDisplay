@@ -34,20 +34,10 @@ namespace MapDisplay
             if (_Map != null)//null pointer control
             {
                 MapView V = _Map.GetMapView();
-                int ColStart = V.ColumnAt(e.ClipRectangle.Left, e.ClipRectangle.Top);
-                ColStart = ColStart == -1 ? 0 : ColStart;//boundry handling
-                int RowStart = V.RowAt(e.ClipRectangle.Left, e.ClipRectangle.Top);
-                RowStart = RowStart == -1 ? 0 : RowStart;
-                int ColEnd = V.ColumnAt(e.ClipRectangle.Right, e.ClipRectangle.Bottom);
-                ColEnd = ColEnd == -1 ? _Map.MapWidth : ColEnd;
-                if (ColEnd == _Map.MapWidth) ColEnd--;
-                int RowEnd = V.RowAt(e.ClipRectangle.Right, e.ClipRectangle.Bottom);
-                RowEnd = RowEnd == -1 ? _Map.MapHeight : RowEnd;
-                if (RowEnd == _Map.MapHeight) RowEnd--;
                 //paint tiles
-                for (int row = RowStart; row <= RowEnd; row++)
+                for (int row = 0; row < _Map.MapHeight; row++)
                 {
-                    for (int col = ColStart; col <= ColEnd; col++)
+                    for (int col = 0; col < _Map.MapWidth; col++)
                     {
                         Point p = V.TileStart(col, row);
                         _Map.PaintTilesAt(e.Graphics, p.X, p.Y, col, row);
