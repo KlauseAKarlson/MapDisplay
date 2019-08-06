@@ -28,13 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.MirrorFrame = new System.Windows.Forms.Panel();
             this.SuspendLayout();
+            // 
+            // MirrorFrame
+            // 
+            this.MirrorFrame.AutoScroll = true;
+            this.MirrorFrame.AutoScrollMinSize = new System.Drawing.Size(400, 400);
+            this.MirrorFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MirrorFrame.Location = new System.Drawing.Point(0, 0);
+            this.MirrorFrame.Name = "MirrorFrame";
+            this.MirrorFrame.Size = new System.Drawing.Size(800, 450);
+            this.MirrorFrame.TabIndex = 0;
             // 
             // FMirrorWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.MirrorFrame);
             this.Name = "FMirrorWindow";
             this.Text = "Map Mirror";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FMirrorWindow_FormClosing);
@@ -43,5 +55,7 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel MirrorFrame;
     }
 }

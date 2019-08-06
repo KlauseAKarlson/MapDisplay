@@ -76,11 +76,7 @@ namespace MapDisplay
             if (_Map == null) return;//do nothing if there is no map
             _Map.tokenSet.BounceToken();
         }
-        private void MapHolder_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (_Map == null) return;//do nothing if there is no map
-            _Map.tokenSet.BounceToken();
-        }
+
         private void BTrash_MouseUp(object sender, MouseEventArgs e)
         {
             if (_Map.tokenSet.TokenGrabbed)
@@ -108,16 +104,19 @@ namespace MapDisplay
         #endregion
         private void DLoadMap_FileOk(object sender, CancelEventArgs e)
         {
-            String saveFile = DLoadMap.FileName;
-            Map m = Map.loadMap(saveFile, TokenPanel);
-            SwapMap(m);
+            try
+            {
+                String saveFile = DLoadMap.FileName;
+                Map m = Map.loadMap(saveFile, TokenPanel);
+                SwapMap(m);
+            }catch (System.IO.IOException EX)
+            {
+                MessageBox.Show(EX.ToString(), "En error has occured",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }//end load map file okay
 
-        private void DNewToken_FileOk(object sender, CancelEventArgs e)
-        {
-
-        }//end newtoken file okay
 
         private void BShowMirror_Click(object sender, EventArgs e)
         {

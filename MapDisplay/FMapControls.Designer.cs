@@ -51,7 +51,6 @@
             this.MapHolder.Name = "MapHolder";
             this.MapHolder.Size = new System.Drawing.Size(629, 395);
             this.MapHolder.TabIndex = 0;
-            this.MapHolder.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MapHolder_MouseUp);
             // 
             // TokenPanel
             // 

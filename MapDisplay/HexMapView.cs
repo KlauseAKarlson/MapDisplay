@@ -56,8 +56,8 @@ namespace MapDisplay
                 // provides the collumn of the tile occupying the map contianing the pixel with the provided coordinates
                 //returns -1 if not in a tile, hexes outside of map are garrenteed to be shown
                 //first check if this will be easy or hard
-                int tWidth = _Map.getWidth();
-                int tHeight = _Map.getHeight();
+                int tWidth = _Map.TileWidth;
+                int tHeight = _Map.TileHeight;
                 int col = -1;
                 //Create a rectangle representing the top of an even rowed hex to the top of the one bellow it. Anything outside the hex will be ofset by half a hex
                 int x2 = x % (tWidth);
@@ -80,8 +80,8 @@ namespace MapDisplay
             {
                 //provides the collumn of the tile occupying the map contianing the pixel with the provided coordinates
                 //returns -1 if not in a tile
-                int tWidth = _Map.getWidth();
-                int tHeight = _Map.getHeight();
+                int tWidth = _Map.TileWidth;
+                int tHeight = _Map.TileHeight;
                 //Create a rectangle representing the top of an even rowed hex to the top of the one bellow it. Anything outside the hex will be eitehr above or bellow
                 int x2 = x % (tWidth);
                 int row = 2 * (int)(y / (tHeight * 1.5));

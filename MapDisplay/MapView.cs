@@ -36,7 +36,7 @@ namespace MapDisplay
               base.OnPaint(e);
 
             //get region to paint
-            int ColStart = ColumnAt(e.ClipRectangle.Left, e.ClipRectangle.Top);
+            /*int ColStart = ColumnAt(e.ClipRectangle.Left, e.ClipRectangle.Top);
             ColStart = ColStart == -1 ? 0 : ColStart;//boundry handling
             int RowStart = RowAt(e.ClipRectangle.Left, e.ClipRectangle.Top);
             RowStart = RowStart == -1 ? 0 : RowStart;
@@ -45,7 +45,10 @@ namespace MapDisplay
             if (ColEnd == _Map.MapWidth) ColEnd--;
             int RowEnd=RowAt(e.ClipRectangle.Right, e.ClipRectangle.Bottom);
             RowEnd = RowEnd == -1 ? _Map.MapHeight : RowEnd;
-            if (RowEnd == _Map.MapHeight) RowEnd--;
+            if (RowEnd == _Map.MapHeight) RowEnd--;*/
+
+            //optimized repainting causes whitespace during scrolling, always repaint the whole map instead
+            int RowStart = 0, RowEnd = _Map.MapWidth - 1, ColStart = 0, ColEnd = _Map.MapHeight - 1;
             //paint tiles
             for (int row=RowStart;row<=RowEnd;row++)
             {

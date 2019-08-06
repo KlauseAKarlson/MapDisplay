@@ -29,7 +29,7 @@ namespace MapDisplay
             InitializeComponent();
             _Parent = parent;
             _Mirror = new MapMirror();
-            Controls.Add(_Mirror);
+            MirrorFrame.Controls.Add(_Mirror);
         }
 
         private void FMirrorWindow_FormClosing(object sender, FormClosingEventArgs e)
