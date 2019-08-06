@@ -166,7 +166,7 @@ Use the [New Token] button or drag and drop an image onto the token panel to cre
 Drag and drop tokens to move them from the token panel to the map.
 Drag and drop tokens to move them around the map.
 Right click on a token on the map to send it back to the token panel.
-Right lick on a token in the token panel to delte the token.";
+Right click on a token in the token panel to delte the token.";
             string caption = "Controls";
             MessageBox.Show(helpText, caption, MessageBoxButtons.OK);
         }
